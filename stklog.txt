@@ -1,0 +1,28 @@
+
+Sun Oct 11 10:21:05 2020
+Stack [STK_GOOD] : Nice!
+size = 0
+capacity = 2
+min_capacity = 2
+buffer:
+[0] = -nan(ind)
+[1] = -nan(ind)
+
+
+Sun Oct 11 10:21:05 2020
+Stack [STK_GOOD] : Nice!
+size = 3
+capacity = 4
+min_capacity = 2
+buffer:
+[0] = 1.000000
+[1] = 2.000000
+[2] = 3.000000
+[3] = -nan(ind)
+
+
+Sun Oct 11 10:21:05 2020
+Stack [STK_DEL] : Stack was deleted.
+
+Sun Oct 11 10:21:05 2020
+Stack [STK_DEL] : Stack was deleted.
