@@ -8,21 +8,17 @@
 
 int main()
 {
-	Stack stk = {};
-	StackConstructor (&stk, 2);
-	StackLog (&stk);
+	Stack stk (98);
+	stk.Log();
 
-	StackPush (&stk, 1) ass (stk);
-	StackPush (&stk, 2) ass (stk);
-	StackPush (&stk, 3) ass (stk);
-	StackLog  (&stk);
+	stk.Push (1); // ass (stk);
+	stk.Push (2); // ass (stk);
+	stk.Push (3); // ass (stk);
+	stk.Log();
 
-	StackPush (&stk, StackPop (&stk) + StackPop (&stk)) ass (stk);
+	stk.Push (stk.Pop() + stk.Pop());// ass (stk);
 
-	printf ("%lf", StackPop (&stk));
-	StackPop (&stk) ass (stk);
-	StackDestructor (&stk);
-	StackDestructor (&stk);
-	StackPop(&stk) ass (stk);
+	printf ("%lf", stk.Pop());
+	//stk.Pop(); // ass (stk);
 	return 0;
 }
