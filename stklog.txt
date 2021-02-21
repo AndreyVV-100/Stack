@@ -1,5 +1,5 @@
 
-Sun Feb 14 14:29:18 2021
+Sun Feb 21 00:40:39 2021
 Stack [STK_GOOD] : Nice!
 size = 0
 capacity = 98
@@ -105,7 +105,7 @@ buffer_:
 [97] = nan
 
 
-Sun Feb 14 14:29:18 2021
+Sun Feb 21 00:40:39 2021
 Stack [STK_GOOD] : Nice!
 size = 3
 capacity = 98
@@ -211,7 +211,7 @@ buffer_:
 [97] = nan
 
 
-Sun Feb 14 14:48:14 2021
+Sun Feb 21 12:36:46 2021
 Stack [STK_GOOD] : Nice!
 size = 0
 capacity = 98
@@ -317,7 +317,7 @@ buffer_:
 [97] = nan
 
 
-Sun Feb 14 14:48:14 2021
+Sun Feb 21 12:36:46 2021
 Stack [STK_GOOD] : Nice!
 size = 3
 capacity = 98

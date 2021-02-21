@@ -1,26 +1,15 @@
 #include "Stack.h"
 
-Stack::Stack (size_t max_size):
+template <typename ElemT>
+Stack <ElemT> :: Stack (size_t max_size):
 
-    stormy_petrel_begin_ (STORMY_PETREL),
-    buffer_not_dynamic_ (),
-	buffer_ (buffer_not_dynamic_),     
-
-    size_         (0),
 	capacity_     (max_size),
     min_capacity_ (max_size),
-    status_error_ (STK_GOOD),
-
-    stk_hash_     (0),
-	buf_hash_     (0),
-    stormy_petrel_end_   (STORMY_PETREL)
+    status_error_ (STK_GOOD)
 
 {
-	// ask : repeat constructor
-    // ask : Stack* stk = nullptr
-
     /*
-	stk_type* buf = (stk_type*) malloc ((max_size + 2) * sizeof (stk_type));
+	ElemT* buf = (ElemT*) malloc ((max_size + 2) * sizeof (ElemT));
 	
 	if (!buf)
 	{
@@ -33,42 +22,45 @@ Stack::Stack (size_t max_size):
 	*((storm*) (buffer_ + max_size + 1)) = STORMY_PETREL;
 
     buffer_++;
-	Poison (max_size);
+	FillPoison (max_size);
 
 	RecountHash();
 
 	return;
 }
 
-Stack::~Stack ()
+template <typename ElemT>
+Stack <ElemT> :: ~Stack ()
 {
-	ASSERT_OK_B{
-	
-//	stk->buffer_ -= 1;
+	ASSERT_OK_B
+	{
+    //	stk->buffer_ -= 1;
 
-	Poison (capacity_);// + 2);
+        FillPoison (capacity_);// + 2);
 
-//	free (stk->buffer_);
+    //	free (stk->buffer_);
 
-//	stk->buffer_ = ERR_FREE;
-	size_ = 0;
-	capacity_ = 0;
-	status_error_ = NOT_CREATED;
-	buf_hash_ = 0;
-	stk_hash_ = 0;
-	GG
+    //	stk->buffer_ = ERR_FREE;
+        size_ = 0;
+        capacity_ = 0;
+        status_error_ = NOT_CREATED;
+        buf_hash_ = 0;
+        stk_hash_ = 0;
+    }
 	return;
 }
 
-void Stack::Poison (size_t num)
+template <typename ElemT>
+void Stack <ElemT> :: FillPoison (size_t num)
 {	
 	for (size_t element = 0; element < num; element++)
-		buffer_[element] = STK_POISON;
+		buffer_[element] = Poison (buffer_);
 
 	return;
 }
 
-void Stack::Push (stk_type elem)
+template <typename ElemT>
+void Stack <ElemT> :: Push (ElemT elem)
 {
 	ASSERT_OK_B
 
@@ -90,45 +82,49 @@ void Stack::Push (stk_type elem)
 	return;
 }
 
-stk_type Stack::Pop ()
+template <typename ElemT>
+ElemT Stack <ElemT> :: Pop ()
 {
 	ASSERT_OK_B
-	
-	if (size_ == 0)
 	{
-		status_error_ = BAD_SIZE_ZERO;
-		Log();
-		return STK_POISON;
-	}
-	else
-	{
-        /*
-		if (stk->capacity > stk->min_capacity &&
-			stk->capacity >= STK_RESIZE * STK_RESIZE * stk->size)
-			StackResizeDown (stk);
+        if (size_ == 0)
+        {
+            status_error_ = BAD_SIZE_ZERO;
+            Log();
+            return Poison (buffer_);
+        }
 
-		if (stk->status_error_ == DO_MEM_ERR) return STK_POISON;
-        */
+        else
+        {
+            /*
+            if (stk->capacity > stk->min_capacity &&
+                stk->capacity >= STK_RESIZE * STK_RESIZE * stk->size)
+                StackResizeDown (stk);
 
-		stk_type popped = buffer_[--(size_)];
-		*(buffer_ + size_) = STK_POISON;
-		
-		RecountHash();
+            if (stk->status_error_ == DO_MEM_ERR) return Poison (buffer_);
+            */
 
-		if (Error()) Log();
-		return popped;
-	GG
+            ElemT popped = buffer_[--(size_)];
+            *(buffer_ + size_) = Poison (buffer_);
+            
+            RecountHash();
 
-	return STK_POISON;
+            if (Error()) Log();
+            return popped;
+        }
+    }
+
+	return Poison (buffer_);
 }
+
 /*
 void Stack::ResizeUp ()
 {
 	ASSERT_OK_B
 
-	stk_type* buf = stk->buffer_ - 1;
+	ElemT* buf = stk->buffer_ - 1;
 
-	buf = (stk_type*) realloc (buf, sizeof (stk_type) * (stk->capacity * STK_RESIZE + 2));
+	buf = (ElemT*) realloc (buf, sizeof (ElemT) * (stk->capacity * STK_RESIZE + 2));
 
 	if (!buf)
 	{
@@ -142,7 +138,7 @@ void Stack::ResizeUp ()
 	*((storm*)  buf)					  = STORMY_PETREL;
 	*((storm*) (buf + stk->capacity + 1)) = STORMY_PETREL;
 
-	StackPoison (buf + stk->size + 1, stk->capacity - stk->size);
+	StackFillPoison (buf + stk->size + 1, stk->capacity - stk->size);
 
 	stk->buffer_ = buf + 1;
 
@@ -157,7 +153,7 @@ void StackResizeDown (Stack* stk)
 {
 	ASSERT_OK_B
 
-	stk_type* buf = stk->buffer_ - 1;
+	ElemT* buf = stk->buffer_ - 1;
 
 	if (!buf)
 	{
@@ -166,12 +162,12 @@ void StackResizeDown (Stack* stk)
 		return;
 	}
 
-	*(buf + stk->capacity + 1) = STK_POISON;
+	*(buf + stk->capacity + 1) = Poison (buffer_);
 
 	if (stk->capacity >= STK_RESIZE * stk->size && 
 		stk->capacity >= STK_RESIZE * stk->min_capacity)
-			buf = (stk_type*) realloc (buf, 
-									  sizeof (stk_type) * (stk->capacity / STK_RESIZE + 2));
+			buf = (ElemT*) realloc (buf, 
+									  sizeof (ElemT) * (stk->capacity / STK_RESIZE + 2));
 
 	stk->capacity /= STK_RESIZE;
 	*((storm*) (buf + stk->capacity + 1)) = STORMY_PETREL;
@@ -185,12 +181,11 @@ void StackResizeDown (Stack* stk)
 }
 */
 
-stack_errors Stack::Error ()
+template <typename ElemT>
+stack_errors Stack <ElemT> :: Error ()
 {
-    /*
-	if (!stk)
+	if (!this)
 		return STK_NULL;
-    */
 	
     if (stormy_petrel_begin_ != STORMY_PETREL)
 		return status_error_ = STK_PETREL_B;
@@ -232,7 +227,8 @@ stack_errors Stack::Error ()
 	return STK_GOOD;
 }
 
-void Stack::Log()
+template <typename ElemT>
+void Stack <ElemT> :: Log()
 {
 	FILE* file = fopen ("stklog.txt", "a");
 
@@ -242,10 +238,16 @@ void Stack::Log()
 	mytime = localtime (&alltime);
 	fprintf (file, "\n%s", asctime (mytime));
 
+    #define fast_ret fclose (file); return
+
+    if (!this)
+	{
+		fprintf (file, "Stack [STK_NULL] : The address of stack is null.\n\n");
+        fast_ret;
+	}
+
 	switch (status_error_)
 	{
-        #define fast_ret fclose (file); return
-
         case BUF_NULL:
             fprintf (file, "Stack [BUF_NULL] : The address of buffer_ is nullptr.\n");
             fast_ret;
@@ -323,7 +325,11 @@ void Stack::Log()
 	*/
 
 	for (int element = 0; element < capacity_; element++)
-		fprintf (file, "[%d] = %lf\n", element, buffer_[element]);
+    {
+		fprintf (file, "[%d] = ", element);
+        Print   (buffer_[element], file);
+        fprintf (file, "\n");
+    }
 
 	fprintf (file, "\n");
 	fclose  (file);
@@ -331,17 +337,17 @@ void Stack::Log()
 	return;
 }
 
-//ToDo: hash_t
-unsigned long long Stack::CountHash (size_t num)
+template <typename ElemT>
+hash_t Stack <ElemT> :: CountHash (size_t num)
 {
 	const int shift = 5;
-	unsigned long long ans = 0;
+	hash_t ans = 0;
 	char buf = 0;
-    char* buffer_r = (char*) buffer_;
+    char* buffer = (char*) buffer_;
 
 	for (size_t count = 0; count < num; count++)
 	{
-		ans += buffer_r[count];
+		ans += buffer[count];
 		buf = ans >> (sizeof (unsigned long long) - shift);
 		ans = (ans << shift) + buf;
 	}
@@ -349,13 +355,38 @@ unsigned long long Stack::CountHash (size_t num)
 	return ans;
 }
 
-void Stack::RecountHash ()
+template <typename ElemT>
+void Stack <ElemT> ::RecountHash ()
 {
 	stk_hash_ = 0;
 	buf_hash_ = 0;
 	
 	stk_hash_ = CountHash (stk_hash_);
-	buf_hash_ = CountHash (capacity_ * sizeof (stk_type));
+	buf_hash_ = CountHash (capacity_ * sizeof (ElemT));
 
 	return;
 }
+
+template <typename ElemT>
+double Stack <ElemT> :: Poison (double*) {return NAN;}
+
+template <typename ElemT>
+int    Stack <ElemT> :: Poison (int*)    {return 0;}
+
+template <typename ElemT>
+char   Stack <ElemT> :: Poison (char*)   {return '\0';}
+
+template <typename ElemT>
+void*  Stack <ElemT> :: Poison (void**)  {return nullptr;}
+
+template <typename ElemT>
+void Stack <ElemT> :: Print (double elem, FILE* stream) {fprintf (stream, "%lf", elem);}
+
+template <typename ElemT>
+void Stack <ElemT> :: Print (int    elem, FILE* stream) {fprintf (stream, "%d",  elem);}
+
+template <typename ElemT>
+void Stack <ElemT> :: Print (char   elem, FILE* stream) {fprintf (stream, "%c",  elem);}
+
+template <typename ElemT>
+void Stack <ElemT> :: Print (void*  elem, FILE* stream) {fprintf (stream, "%p",  elem);}

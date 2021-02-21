@@ -8,7 +8,7 @@
 
 int main()
 {
-	Stack stk (98);
+	Stack <double> stk (98);
 	stk.Log();
 
 	stk.Push (1); // ass (stk);
@@ -18,7 +18,7 @@ int main()
 
 	stk.Push (stk.Pop() + stk.Pop());// ass (stk);
 
-	printf ("%lf", stk.Pop());
+	printf ("%lf\n", stk.Pop());
 	//stk.Pop(); // ass (stk);
 	return 0;
 }
